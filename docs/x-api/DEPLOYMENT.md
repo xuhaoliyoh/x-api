@@ -25,6 +25,18 @@
 
 数据库和 Redis 不映射宿主机端口。网站入口仅由 Nginx 提供，应用端口仅监听回环。容器设置自动重启，Docker 和 Nginx 随系统启动。
 
+## 域名接入进度
+
+目标网站域名为 `www.liyoh.cn`。2026-10-18 已在阿里云云解析保存并启用以下记录，并将 Nginx 的 `server_name` 配置为该域名与现有服务器 IP：
+
+| 主机记录 | 类型 | 记录值 | TTL |
+|---|---|---|---|
+| `www` | A | `39.106.248.129` | 600 秒 |
+
+权威 DNS `dns1.hichina.com` 已返回正确记录；当时公共递归 DNS 仍返回 `NXDOMAIN`，域名控制台显示“注册局审核中”。携带该域名 Host 的服务器请求已返回健康状态，但这不代表普通用户已经能够通过域名访问。
+
+下一步需等待域名审核与 DNS 同步、完成阿里云中国内地服务器所需的 ICP 备案，再配置 HTTPS 证书及续期。当前未配置 HTTPS，也未对裸域名 `liyoh.cn` 添加解析或跳转。新注册域名的审核、备案与 DNS 缓存更新是不同环节，不应仅按记录 TTL 推断上线时间。参见[阿里云域名注册说明](https://help.aliyun.com/zh/dws/user-guide/how-to-register-a-domain-name)和[备案场景说明](https://help.aliyun.com/zh/icp-filing/what-scenarios-need-to-be-filed-in-aliyun)。
+
 ## 1. 在开发机生成部署包
 
 在仓库根目录执行，需要 Go、Node、pnpm 和运行中的 Docker Desktop：
