@@ -1,0 +1,37 @@
+name: x-api-local
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:25432:5432"
+    environment:
+      POSTGRES_USER: xapi
+      POSTGRES_DB: xapi
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?Run scripts/local.py init}
+    volumes:
+      - xapi-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xapi -d xapi"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:26379:6379"
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Run scripts/local.py init}
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    command: ["sh", "-ec", 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
+    volumes:
+      - xapi-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  xapi-postgres:
+  xapi-redis:
