@@ -140,15 +140,19 @@ x-api/
 ├── scripts/          本地生命周期与隔离集成验证
 ├── docs/x-api/       X-API 管理和开发说明
 ├── docs/upstream/    上游 README 与原始仓库记录
-├── deploy/           保留的上游部署参考
+├── deploy/x-api/     云端运行镜像、Compose、Nginx 与备份配置
 └── .local/           运行时文件与密钥，不进入版本库
 ```
 
-## 后续部署
+## 云端部署
 
-目标服务器为 **Ubuntu 22.04**。当前完成本地版本，尚未连接服务器或部署云端。下一阶段再整理 X-API 专用镜像与服务器 Compose，配置域名、HTTPS、邮件服务、备份恢复和监控。
+支持部署到 **Ubuntu 22.04 / 2 vCPU / 2 GB**：本机交叉编译，服务器运行 X-API、PostgreSQL 18 和 Redis 8，由 Nginx 提供网站入口。包含资源限制、日志轮转、开机自启和每日备份。
 
-`dev/compose.yaml` 仅用于本地依赖，`deploy/` 中保留的是上游参考文件；不要把上游镜像当成当前 X-API 自定义构建直接上线。
+```bash
+python3 scripts/build-server.py
+```
+
+完整安装、更新和恢复步骤见 **[服务器部署指南](docs/x-api/DEPLOYMENT.md)**。`dev/compose.yaml` 仅用于本地；云端使用 `deploy/x-api/`。域名、HTTPS、邮件服务与异地自动备份尚待配置。
 
 ## 来源与许可证
 
