@@ -1,8 +1,9 @@
 /**
- * Vue Router configuration for Sub2API frontend
+ * Vue Router configuration for X-API frontend
  * Defines all application routes with lazy loading and navigation guards
  */
 
+import { isXAPIPathEnabled } from '@/xapi'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
@@ -18,6 +19,8 @@ import { resolveRouteDocumentTitle } from './title'
  * Route definitions with lazy loading
  */
 const routes: RouteRecordRaw[] = [
+  { path: '/models', name: 'XAPIModels', component: () => import('@/views/user/XAPIModelsView.vue'), meta: { requiresAuth: true, title: '可用模型' } },
+  { path: '/guide', name: 'XAPIGuide', component: () => import('@/views/user/XAPIGuideView.vue'), meta: { requiresAuth: true, title: '接入指南' } },
   // ==================== Setup Routes ====================
   {
     path: '/setup',
@@ -973,6 +976,11 @@ router.beforeEach(async (to, _from, next) => {
       next('/login')
       return
     }
+  }
+
+  if (!isXAPIPathEnabled(to.path)) {
+    next(authStore.isAdmin ? '/admin/dashboard' : '/dashboard')
+    return
   }
 
   // All checks passed, allow navigation

@@ -170,3 +170,6 @@ issues/
 !scripts/
 !scripts/**
 .local/
+
+__pycache__/
+*.pyc
