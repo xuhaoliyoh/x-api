@@ -70,3 +70,18 @@ func (h *GatewayHandler) RequireConfiguredChatModel(c *gin.Context) {
 	}
 	c.Next()
 }
+
+// XAPIModels serves the standard model endpoints without provider defaults.
+func (h *GatewayHandler) XAPIModels(c *gin.Context) {
+	apiKey, _ := middleware2.GetAPIKeyFromContext(c)
+	if apiKey == nil || apiKey.Group == nil {
+		writeModelsList(c, "", []string{})
+		return
+	}
+	models, err := h.gatewayService.XAPIConfiguredModels(c.Request.Context(), apiKey.Group)
+	if err != nil {
+		c.JSON(503, gin.H{"error": gin.H{"message": "模型目录暂时不可用", "type": "server_error"}})
+		return
+	}
+	writeModelsList(c, apiKey.Group.Platform, models)
+}

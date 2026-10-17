@@ -63,13 +63,8 @@ func RegisterGatewayRoutes(
 	codexModelsHandler := func(c *gin.Context) {
 		dispatchCodexModelsGateway(c, h.OpenAIGateway.CodexModels, h.Gateway.CodexModels)
 	}
-	modelsHandler := func(c *gin.Context) {
-		if c.Query("client_version") != "" {
-			codexModelsHandler(c)
-			return
-		}
-		h.Gateway.Models(c)
-	}
+	modelsHandler := h.Gateway.XAPIModels
+
 	isOpenAIOnlyEndpointGatewayPlatform := func(c *gin.Context) bool {
 		return getGroupPlatform(c) == service.PlatformOpenAI
 	}
@@ -206,7 +201,7 @@ func RegisterGatewayRoutes(
 		// Codex manifest format; other clients keep the OpenAI-style list.
 		gateway.GET("/models", modelsHandler)
 		// Single-model discovery never selects the Codex client_version manifest.
-		gateway.GET("/models/:model", h.Gateway.Models)
+		gateway.GET("/models/:model", h.Gateway.XAPIModels)
 		gateway.GET("/usage", h.Gateway.Usage)
 		gateway.POST("/live", h.OpenAIGateway.Live)
 		gateway.GET("/live/:call_id", h.OpenAIGateway.LiveSideband)
@@ -383,7 +378,7 @@ func RegisterGatewayRoutes(
 		h.OpenAIGateway.ResponsesWebSocket(c)
 	})
 	rootRoute(http.MethodGet, "/models", bodyLimit, modelsHandler)
-	rootRoute(http.MethodGet, "/models/:model", bodyLimit, h.Gateway.Models)
+	rootRoute(http.MethodGet, "/models/:model", bodyLimit, h.Gateway.XAPIModels)
 	rootRoute(http.MethodPost, "/messages/count_tokens", bodyLimit, countTokensHandler)
 	codexDirect := r.Group("/backend-api/codex")
 	codexDirect.Use(bodyLimit, clientRequestID, opsErrorLogger, endpointNorm, gin.HandlerFunc(apiKeyAuth), groupModelAllowlist, compositeTarget, requireGroupAnthropic)
