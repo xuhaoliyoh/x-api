@@ -1,0 +1,74 @@
+name: x-api
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+services:
+  app:
+    image: ${XAPI_IMAGE:?Set a locally built X-API image}
+    pull_policy: never
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATA_DIR: /app/data
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: "8080"
+      DATABASE_HOST: postgres
+      DATABASE_PORT: "5432"
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      DATABASE_MAX_OPEN_CONNS: "20"
+      DATABASE_MAX_IDLE_CONNS: "5"
+      REDIS_POOL_SIZE: "32"
+      GOMEMLIMIT: 450MiB
+      GOMAXPROCS: "2"
+    ports: ["127.0.0.1:18080:8080"]
+    volumes: ["app-data:/app/data"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    mem_limit: 640m
+    pids_limit: 256
+    security_opt: ["no-new-privileges:true"]
+    logging: *logging
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:18-alpine}
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: xapi
+      POSTGRES_DB: xapi
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?Set DATABASE_PASSWORD}
+      TZ: Asia/Shanghai
+    command: ["postgres", "-c", "max_connections=40", "-c", "shared_buffers=96MB", "-c", "work_mem=2MB", "-c", "maintenance_work_mem=32MB"]
+    volumes: ["postgres-data:/var/lib/postgresql"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U xapi -d xapi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 384m
+    pids_limit: 128
+    logging: *logging
+  redis:
+    image: ${REDIS_IMAGE:-redis:8-alpine}
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD}
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    command: ["sh", "-ec", 'exec redis-server --appendonly yes --maxmemory 48mb --maxmemory-policy noeviction --requirepass "$$REDIS_PASSWORD"']
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 96m
+    pids_limit: 64
+    logging: *logging
+volumes:
+  app-data:
+  postgres-data:
+  redis-data:

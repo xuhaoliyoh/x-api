@@ -1,0 +1,18 @@
+# Build with scripts/build-server.py; the Go binary is compiled on the workstation.
+# Reuse the database layer and its matching pg_dump/psql clients on small servers.
+ARG POSTGRES_IMAGE=postgres:18-alpine
+FROM ${POSTGRES_IMAGE}
+LABEL org.opencontainers.image.title="X-API"
+LABEL org.opencontainers.image.source="https://github.com/xuhaoliyoh/x-api"
+WORKDIR /app
+RUN addgroup -g 1000 xapi && adduser -D -u 1000 -G xapi xapi \
+    && mkdir -p /app/data && chown xapi:xapi /app/data
+COPY --chown=xapi:xapi x-api /app/x-api
+COPY --chown=xapi:xapi resources /app/resources
+COPY LICENSE COPYING UPSTREAM.md /app/licenses/
+USER xapi
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+    CMD wget -q -T 4 -O /dev/null http://127.0.0.1:8080/health || exit 1
+ENTRYPOINT ["/app/x-api"]
+CMD []
