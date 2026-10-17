@@ -72,6 +72,8 @@ func RegisterUserRoutes(
 			}
 		}
 
+		authenticated.GET("/x-api/models", h.Gateway.XAPICatalog)
+
 		// API Key管理
 		keys := authenticated.Group("/keys")
 		{
