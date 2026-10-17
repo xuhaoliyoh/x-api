@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="mb-6 rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm text-teal-900 dark:border-teal-900 dark:bg-teal-950 dark:text-teal-200">额度由管理员分配。首次使用请先联系管理员，再创建密钥；账户额度与密钥限额分别计算。<router-link to="/guide" class="ml-2 underline">查看接入指南</router-link></div>
+    <div class="mb-6 rounded-xl border border-primary-200 bg-primary-50 p-4 text-sm text-primary-900 dark:border-primary-900 dark:bg-primary-950 dark:text-primary-200">额度由管理员分配。首次使用请先联系管理员，再创建密钥；账户额度与密钥限额分别计算。<router-link to="/guide" class="ml-2 underline">查看接入指南</router-link></div>
     <div class="space-y-6">
       <div v-if="loading" class="flex items-center justify-center py-12"><LoadingSpinner /></div>
       <template v-else-if="stats">
