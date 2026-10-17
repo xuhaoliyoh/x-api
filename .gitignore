@@ -49,11 +49,7 @@ pnpm-debug.log*
 # ===================
 # 环境配置
 # ===================
-.env
-.env.local
-.env.*.local
-*.env
-!.env.example
+# 私密配置的统一规则放在文件末尾，避免被后续目录放行规则覆盖。
 docker-compose.override.yml
 
 # ===================
@@ -173,3 +169,62 @@ issues/
 
 __pycache__/
 *.pyc
+
+# ===================
+# 私密配置、密钥与运行数据
+# 放在目录放行规则之后，scripts/ 等目录也必须遵循。
+# ===================
+.env
+.env.*
+*.env
+.envrc
+!.env.example
+!.env.*.example
+.secrets/
+.ssh/
+.aws/
+.kube/
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+*.key
+*.pem
+*.p8
+*.p12
+*.pfx
+*.ppk
+*.jks
+*.keystore
+credentials.json
+credentials.*.json
+*service-account*.json
+*service_account*.json
+
+# 生产配置保留在本机；示例配置和 openspec/config.yaml 仍可提交。
+/config.yaml
+/config.yml
+/config.production.yaml
+/config.production.yml
+/backend/config.*.yaml
+/backend/config.*.yml
+/deploy/config.*.yaml
+/deploy/config.*.yml
+!config.example.yaml
+!config.example.yml
+
+# 备份和数据库数据不可上传；数据库迁移 .sql 文件正常提交。
+backups/
+postgres_data/
+redis_data/
+/deploy/**/data/
+logs/
+*.dump
+*.backup
+*.sql.gz
+*.sql.xz
+*.sqlite
+*.sqlite3
+*.db
+*.rdb
+*.aof
