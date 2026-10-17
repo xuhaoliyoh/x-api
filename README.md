@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="frontend/public/logo.svg" width="88" alt="X-API" />
+  <img src="frontend/public/psyduck-logo.jpg" width="88" alt="X-API" />
   <h1>X-API</h1>
   <p><strong>你的模型，你的 API 入口。</strong></p>
   <p>管理员分配额度 · 用户管理密钥 · 真实模型接入 · 清晰的调用记录</p>

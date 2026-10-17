@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-[#f8fafb] text-slate-900 dark:bg-dark-950 dark:text-white">
     <header class="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-      <router-link to="/home" class="flex items-center gap-3 text-xl font-bold tracking-tight"><img src="/logo.svg" alt="X-API" class="h-10 w-10" />X-API</router-link>
+      <router-link to="/home" class="flex items-center gap-3 text-xl font-bold tracking-tight"><img src="/psyduck-logo.jpg" alt="X-API 可达鸭" class="h-10 w-10 rounded-xl bg-white object-contain" />X-API</router-link>
       <nav class="flex items-center gap-5 text-sm">
         <router-link to="/guide" class="hidden text-slate-500 hover:text-teal-600 sm:block">接入指南</router-link>
         <router-link :to="auth.isAuthenticated ? dashboard : '/login'" class="rounded-full border border-slate-200 px-5 py-2.5 dark:border-dark-700">{{ auth.isAuthenticated ? '进入控制台' : '登录' }}</router-link>
