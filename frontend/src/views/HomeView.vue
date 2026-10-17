@@ -7,11 +7,11 @@
         <router-link :to="auth.isAuthenticated ? dashboard : '/login'" class="rounded-full border border-slate-200 px-5 py-2.5 dark:border-dark-700">{{ auth.isAuthenticated ? '进入控制台' : '登录' }}</router-link>
       </nav>
     </header>
-    <main class="mx-auto max-w-6xl px-6 pb-20 pt-16 sm:pt-24">
+    <main class="mx-auto max-w-6xl px-6 pb-20 pt-10 sm:pt-24">
       <div class="grid items-center gap-14 lg:grid-cols-2">
         <section>
           <p class="mb-6 text-xs font-semibold uppercase tracking-[0.25em] text-teal-700 dark:text-teal-400">YOUR MODELS. YOUR API.</p>
-          <h1 class="text-5xl font-semibold leading-tight tracking-tight sm:text-6xl">连接模型，<br /><span class="text-teal-600">从这里开始。</span></h1>
+          <h1 class="text-4xl font-semibold leading-tight tracking-tight sm:text-6xl">连接模型，<br /><span class="text-teal-600">从这里开始。</span></h1>
           <p class="mt-7 max-w-lg text-lg leading-8 text-slate-500 dark:text-slate-400">一个地址，一枚密钥。通过 X-API 接入管理员提供的模型，让每一次调用都有清晰的记录。</p>
           <div class="mt-9 flex flex-wrap gap-3">
             <router-link :to="auth.isAuthenticated ? '/keys' : (registrationEnabled ? '/register' : '/login')" class="rounded-xl bg-slate-900 px-6 py-3.5 font-medium text-white hover:bg-teal-800 dark:bg-teal-600">{{ auth.isAuthenticated ? '管理我的密钥' : (registrationEnabled ? '创建账号 →' : '登录控制台 →') }}</router-link>

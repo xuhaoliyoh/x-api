@@ -842,7 +842,7 @@ const adminNavItems = computed((): NavItem[] => {
     { path: '/admin/audit-logs', label: t('nav.auditLogs'), icon: ShieldIcon, hideInSimpleMode: true }
   ]
 
-  const visible = applyFeatureFlags(baseItems)
+  const visible = applyFeatureFlags(baseItems.filter(item => isXAPIPathEnabled(item.path)))
 
   // 简单模式下，在系统设置前插入 API密钥
   if (authStore.isSimpleMode) {
