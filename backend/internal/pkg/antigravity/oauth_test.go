@@ -783,15 +783,17 @@ func TestConstants_值正确(t *testing.T) {
 	if UserInfoURL != "https://www.googleapis.com/oauth2/v2/userinfo" {
 		t.Errorf("UserInfoURL 不匹配: got %s", UserInfoURL)
 	}
-	if ClientID != "" {
+	if ClientID != strings.TrimSpace(os.Getenv(AntigravityOAuthClientIDEnv)) {
 		t.Errorf("ClientID 不匹配: got %s", ClientID)
 	}
 	secret, err := getClientSecret()
-	if err != nil {
-		t.Fatalf("getClientSecret 应返回默认值，但报错: %v", err)
-	}
-	if secret != "" {
-		t.Errorf("默认 client_secret 不匹配: got %s", secret)
+	wantSecret := strings.TrimSpace(os.Getenv(AntigravityOAuthClientSecretEnv))
+	if wantSecret == "" {
+		if err == nil {
+			t.Fatal("unconfigured OAuth must not use an embedded client secret")
+		}
+	} else if err != nil || secret != wantSecret {
+		t.Fatal("OAuth must use the operator-provided secret")
 	}
 	if RedirectURI != "http://localhost:8085/callback" {
 		t.Errorf("RedirectURI 不匹配: got %s", RedirectURI)

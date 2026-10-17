@@ -179,13 +179,16 @@ func EffectiveOAuthConfig(cfg OAuthConfig, oauthType string) (OAuthConfig, error
 		if secret == "" {
 			return OAuthConfig{}, infraerrors.Newf(http.StatusBadRequest, "GEMINI_CLI_OAUTH_CLIENT_SECRET_MISSING", "built-in Gemini CLI OAuth client_secret is not configured; set %s or provide a custom OAuth client", GeminiCLIOAuthClientSecretEnv)
 		}
-		effective.ClientID = GeminiCLIOAuthClientID
+		effective.ClientID = GetGeminiCLIOAuthClientID()
+		if effective.ClientID == "" {
+			return OAuthConfig{}, infraerrors.Newf(http.StatusBadRequest, "GEMINI_CLI_OAUTH_CLIENT_ID_MISSING", "set %s or provide a custom OAuth client", GeminiCLIOAuthClientIDEnv)
+		}
 		effective.ClientSecret = secret
 	} else if effective.ClientID == "" || effective.ClientSecret == "" {
 		return OAuthConfig{}, infraerrors.New(http.StatusBadRequest, "GEMINI_OAUTH_CLIENT_NOT_CONFIGURED", "OAuth client not configured: please set both client_id and client_secret (or leave both empty to use the built-in Gemini CLI client)")
 	}
 
-	isBuiltinClient := effective.ClientID == GeminiCLIOAuthClientID
+	isBuiltinClient := effective.ClientID == GetGeminiCLIOAuthClientID()
 
 	if effective.Scopes == "" {
 		// Use different default scopes based on OAuth type
