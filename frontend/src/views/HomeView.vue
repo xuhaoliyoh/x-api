@@ -36,7 +36,13 @@
         <article v-for="item in features" :key="item.title"><p class="mb-4 font-mono text-xs text-primary-600 dark:text-primary-300">{{ item.number }}</p><h2 class="text-lg font-semibold">{{ item.title }}</h2><p class="mt-3 text-sm leading-7 text-gray-500 dark:text-gray-400">{{ item.body }}</p></article>
       </section>
     </main>
-    <footer class="mx-auto flex max-w-6xl flex-wrap justify-between gap-3 border-t border-gray-200 px-6 py-6 text-xs text-gray-500 dark:border-dark-800"><span>© {{ new Date().getFullYear() }} X-API</span><a href="https://github.com/Wei-Shaw/sub2api" target="_blank" rel="noopener noreferrer">基于 Sub2API · LGPL-3.0</a></footer>
+    <footer class="mx-auto max-w-6xl border-t border-gray-200 px-6 py-6 text-xs text-gray-500 dark:border-dark-800">
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:justify-between">
+        <span>© {{ new Date().getFullYear() }} X-API</span>
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-primary-700 dark:hover:text-primary-300">京ICP备2026072941号-1</a>
+        <a href="https://github.com/Wei-Shaw/sub2api" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-primary-700 dark:hover:text-primary-300">基于 Sub2API · LGPL-3.0</a>
+      </div>
+    </footer>
   </div>
 </template>
 <script setup lang="ts">
