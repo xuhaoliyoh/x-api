@@ -152,7 +152,7 @@ x-api/
 python3 scripts/build-server.py
 ```
 
-完整安装、更新和恢复步骤见 **[服务器部署指南](docs/x-api/DEPLOYMENT.md)**。`dev/compose.yaml` 仅用于本地；云端使用 `deploy/x-api/`。域名、HTTPS、邮件服务与异地自动备份尚待配置。
+完整安装、更新和恢复步骤见 **[服务器部署指南](docs/x-api/DEPLOYMENT.md)**。`dev/compose.yaml` 仅用于本地；云端使用 `deploy/x-api/`。正式入口为 **[www.liyoh.cn](https://www.liyoh.cn)**，已配置 HTTPS 与证书自动续期；邮件服务与异地自动备份尚待配置。
 
 ## 来源与许可证
 

@@ -6,7 +6,7 @@
 
 ```text
 浏览器 / API 客户端
-        │ HTTP :80（配置域名后升级 HTTPS）
+        │ HTTPS :443（www 的 HTTP :80 自动跳转）
       Nginx
         │ 127.0.0.1:18080
    X-API 容器 ── PostgreSQL 18
@@ -33,9 +33,34 @@
 |---|---|---|---|
 | `www` | A | `39.106.248.129` | 600 秒 |
 
-权威 DNS `dns1.hichina.com` 已返回正确记录；当时公共递归 DNS 仍返回 `NXDOMAIN`，域名控制台显示“注册局审核中”。携带该域名 Host 的服务器请求已返回健康状态，但这不代表普通用户已经能够通过域名访问。
+2026-10-28 验证：阿里云显示实名认证成功，公共 DNS 已解析至服务器，HTTP 首页与健康检查正常。已签发 `www.liyoh.cn` 的 Let’s Encrypt 证书并启用 HTTPS，安全组已开放 TCP 443 / `0.0.0.0/0`。HTTP 的 www 地址以 308 跳转至 HTTPS，保留路径和查询参数。IP 与裸域名仍保留原 HTTP 入口；证书仅覆盖 www 域名。
 
-下一步需等待域名审核与 DNS 同步、完成阿里云中国内地服务器所需的 ICP 备案，再配置 HTTPS 证书及续期。当前未配置 HTTPS，也未对裸域名 `liyoh.cn` 添加解析或跳转。新注册域名的审核、备案与 DNS 缓存更新是不同环节，不应仅按记录 TTL 推断上线时间。参见[阿里云域名注册说明](https://help.aliyun.com/zh/dws/user-guide/how-to-register-a-domain-name)和[备案场景说明](https://help.aliyun.com/zh/icp-filing/what-scenarios-need-to-be-filed-in-aliyun)。
+实名认证成功和网站可访问不代表 ICP 备案通过；备案状态尚未核实。
+
+### HTTPS 与自动续期
+
+正式入口：**https://www.liyoh.cn**。API 客户端直接使用 HTTPS，避免先向 HTTP 发送密钥。当前证书于 2027-01-26 到期，由 `certbot.timer` 自动续期；2026-10-28 续期演练通过。私钥仅保留在服务器 `/etc/letsencrypt/`，不进入仓库或部署包。
+
+首次升级（先完成 DNS 与 80 端口验证）：
+
+```bash
+apt-get install -y certbot python3-certbot-nginx
+certbot certonly --nginx -d www.liyoh.cn
+# 将仓库中的 nginx.https.conf、reload-nginx 上传到 /opt/x-api 后：
+install -m 644 /opt/x-api/nginx.https.conf /etc/nginx/sites-available/x-api
+install -m 755 /opt/x-api/reload-nginx /etc/letsencrypt/renewal-hooks/deploy/reload-nginx
+nginx -t && systemctl reload nginx
+systemctl enable --now certbot.timer
+certbot renew --dry-run
+```
+
+开放安全组 TCP 443 并验证外网 HTTPS 后才启用 HTTP 跳转。`nginx.conf` 是首次签发前的 HTTP 引导配置，已启用 HTTPS 的服务器不要用它覆盖现有站点；后续维护使用 `nginx.https.conf`。续期部署钩子在证书更新后检查并重新加载 Nginx。
+
+```bash
+curl -fsS https://www.liyoh.cn/health
+systemctl status certbot.timer
+journalctl -u certbot.service --since '7 days ago'
+```
 
 ## 1. 在开发机生成部署包
 
@@ -94,7 +119,7 @@ systemctl enable --now x-api-backup.timer
 ./backup.sh
 ```
 
-阿里云安全组需要允许 TCP 80 入站；不要开放 5432、6379 或 18080。域名和证书配置完成后再开放 443。当前 IP 入口使用明文 HTTP，适合先验收；正式提供用户登录和 API 服务前配置 HTTPS，并使用更强的管理员密码。
+阿里云安全组需要允许 TCP 80 入站；不要开放 5432、6379 或 18080。当前 www 域名已启用 HTTPS 并开放 443，用户登录和 API 调用应使用 HTTPS 入口。
 
 管理员初始化成功后，`ADMIN_PASSWORD` 不会在重启时覆盖已有账号密码。后续在个人设置修改密码；初次初始化留下的明文密码可从 `.env` 移除，同时把 `AUTO_SETUP` 改为 `false`，再重建应用容器。
 
